@@ -10,11 +10,13 @@
     "fix": "prettier --write . && eslint --fix --ext .jsx ."
   },
   "dependencies": {
+    "@sncf/bootstrap-sncf.metier": "^4.3.1-r5",
     "prop-types": "^15.8.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
+    "@sncf/bootstrap-sncf.metier": "^4.3.1-r5",
     "@vitejs/plugin-react": "^3.0.1",
     "eslint": "^8.31.0",
     "eslint-config-airbnb": "^19.0.4",
