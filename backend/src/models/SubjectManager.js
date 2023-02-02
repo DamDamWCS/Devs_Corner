@@ -6,8 +6,8 @@ class SubjectManager extends AbstractManager {
   }
 
   // eslint-disable-next-line consistent-return
-  findAllQuerry(tagsId) {
-    if (!tagsId) {
+  findAllQuerry(tagId) {
+    if (!tagId) {
       return this.database
         .query(`SELECT subject.id, subject.text, subject.title, subject.status_resolve, subject.created_at, GROUP_CONCAT(tag.name) as tags, concat(user.first_name, " ", user.last_name ) as Auteur
       FROM devs_corner.subject
@@ -17,7 +17,7 @@ class SubjectManager extends AbstractManager {
       GROUP BY subject.id
       `);
     }
-    if (typeof tagsId === "string") {
+    if (typeof tagId === "string") {
       return this.database.query(
         `SELECT subject.id, subject.text, subject.title, subject.status_resolve, subject.created_at, GROUP_CONCAT(tag.name) as tags, concat(user.first_name, " ", user.last_name ) as Auteur
         FROM devs_corner.subject
@@ -27,11 +27,11 @@ class SubjectManager extends AbstractManager {
         WHERE subject_has_tag.tag_id IN (?)
         GROUP BY subject.id
         HAVING COUNT(DISTINCT subject_has_tag.tag_id) = 1`,
-        tagsId
+        tagId
       );
     }
-    if (Array.isArray(tagsId)) {
-      const placeholders = tagsId.map(() => `?`).join(",");
+    if (Array.isArray(tagId)) {
+      const placeholders = tagId.map(() => `?`).join(",");
       return this.database.query(
         `SELECT subject.id, subject.text, subject.title, subject.status_resolve, subject.created_at, GROUP_CONCAT(tag.name) as tags, concat(user.first_name, " ", user.last_name ) as Auteur
         FROM devs_corner.subject
@@ -39,9 +39,8 @@ class SubjectManager extends AbstractManager {
         INNER JOIN devs_corner.tag ON subject_has_tag.tag_id = tag.id
         INNER JOIN devs_corner.user ON devs_corner.subject.user_id = devs_corner.user.id
         WHERE subject_has_tag.tag_id IN (${placeholders})
-        GROUP BY subject.id
-        HAVING COUNT(DISTINCT subject_has_tag.tag_id) = ?`,
-        [...tagsId, tagsId.length]
+        GROUP BY subject.id`,
+        tagId
       );
     }
   }

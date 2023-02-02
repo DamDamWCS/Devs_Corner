@@ -2,7 +2,7 @@ const models = require("../models");
 
 const browse = (req, res) => {
   models.subject
-    .findAllQuerry(req.query.tags)
+    .findAllQuerry(req.query.tag)
     .then(([rows]) => {
       res.json(rows);
     })
