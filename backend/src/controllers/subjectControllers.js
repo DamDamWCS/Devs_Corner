@@ -1,15 +1,37 @@
 const models = require("../models");
 
 const browse = (req, res) => {
-  models.subject
-    .findAllQuerry(req.query.tag)
-    .then(([rows]) => {
-      res.json(rows);
-    })
-    .catch((err) => {
-      console.error(err);
-      res.sendStatus(500);
-    });
+  if (!req.query.tag) {
+    models.subject
+      .getAll()
+      .then(([rows]) => {
+        res.json(rows);
+      })
+      .catch((err) => {
+        console.error(err);
+        res.sendStatus(500);
+      });
+  } else if (typeof req.query.tag === "string") {
+    models.subject
+      .getAllOneQuery(req.query.tag)
+      .then(([rows]) => {
+        res.json(rows);
+      })
+      .catch((err) => {
+        console.error(err);
+        res.sendStatus(500);
+      });
+  } else {
+    models.subject
+      .getAllQuery(req.query.tag)
+      .then(([rows]) => {
+        res.json(rows);
+      })
+      .catch((err) => {
+        console.error(err);
+        res.sendStatus(500);
+      });
+  }
 };
 
 const read = (req, res) => {

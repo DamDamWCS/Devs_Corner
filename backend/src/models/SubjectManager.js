@@ -5,21 +5,20 @@ class SubjectManager extends AbstractManager {
     super({ table: "subject" });
   }
 
-  // eslint-disable-next-line consistent-return
-  findAllQuerry(tagId) {
-    if (!tagId) {
-      return this.database
-        .query(`SELECT subject.id, subject.text, subject.title, subject.status_resolve, subject.created_at, GROUP_CONCAT(tag.name) as tags, concat(user.first_name, " ", user.last_name ) as Auteur
+  getAll() {
+    return this.database
+      .query(`SELECT subject.id, subject.text, subject.title, subject.status_resolve, subject.created_at, JSON_ARRAYAGG(tag.name) as tags, concat(user.first_name, " ", user.last_name ) as Auteur
       FROM devs_corner.subject
       INNER JOIN devs_corner.subject_has_tag ON subject.id = subject_has_tag.subject_id
       INNER JOIN devs_corner.tag ON subject_has_tag.tag_id = tag.id
       INNER JOIN devs_corner.user ON devs_corner.subject.user_id = devs_corner.user.id
       GROUP BY subject.id
       `);
-    }
-    if (typeof tagId === "string") {
-      return this.database.query(
-        `SELECT subject.id, subject.text, subject.title, subject.status_resolve, subject.created_at, GROUP_CONCAT(tag.name) as tags, concat(user.first_name, " ", user.last_name ) as Auteur
+  }
+
+  getAllOneQuery(tagId) {
+    return this.database.query(
+      `SELECT subject.id, subject.text, subject.title, subject.status_resolve, subject.created_at, JSON_ARRAYAGG(tag.name) as tags, concat(user.first_name, " ", user.last_name ) as Auteur
         FROM devs_corner.subject
         INNER JOIN devs_corner.subject_has_tag ON subject.id = subject_has_tag.subject_id
         INNER JOIN devs_corner.tag ON subject_has_tag.tag_id = tag.id
@@ -27,34 +26,21 @@ class SubjectManager extends AbstractManager {
         WHERE subject_has_tag.tag_id IN (?)
         GROUP BY subject.id
         HAVING COUNT(DISTINCT subject_has_tag.tag_id) = 1`,
-        tagId
-      );
-    }
-    if (Array.isArray(tagId)) {
-      const placeholders = tagId.map(() => `?`).join(",");
-      return this.database.query(
-        `SELECT subject.id, subject.text, subject.title, subject.status_resolve, subject.created_at, GROUP_CONCAT(tag.name) as tags, concat(user.first_name, " ", user.last_name ) as Auteur
+      tagId
+    );
+  }
+
+  getAllQuery(tagId) {
+    const placeholders = tagId.map(() => `?`).join(",");
+    return this.database.query(
+      `SELECT subject.id, subject.text, subject.title, subject.status_resolve, subject.created_at, JSON_ARRAYAGG(tag.name) as tags, concat(user.first_name, " ", user.last_name ) as Auteur
         FROM devs_corner.subject
         INNER JOIN devs_corner.subject_has_tag ON subject.id = subject_has_tag.subject_id
         INNER JOIN devs_corner.tag ON subject_has_tag.tag_id = tag.id
         INNER JOIN devs_corner.user ON devs_corner.subject.user_id = devs_corner.user.id
         WHERE subject_has_tag.tag_id IN (${placeholders})
         GROUP BY subject.id`,
-        tagId
-      );
-    }
-  }
-
-  insert(item) {
-    return this.database.query(`insert into ${this.table} (title) values (?)`, [
-      item.title,
-    ]);
-  }
-
-  update(item) {
-    return this.database.query(
-      `update ${this.table} set title = ? where id = ?`,
-      [item.title, item.id]
+      tagId
     );
   }
 }
