@@ -39,7 +39,7 @@ ENGINE = InnoDB;
 CREATE TABLE IF NOT EXISTS `devs_corner`.`subject` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `title` VARCHAR(150) NOT NULL,
-  `text` MEDIUMBLOB NOT NULL,
+  `text` MEDIUMTEXT NOT NULL,
   `best_answer_id` INT ,
   `status_resolve` TINYINT NOT NULL,
   `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
