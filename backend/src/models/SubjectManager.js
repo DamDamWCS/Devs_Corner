@@ -44,9 +44,14 @@ class SubjectManager extends AbstractManager {
   }
 
   getId(id) {
-    return this.database.query(`select * from  ${this.table} where id = ?`, [
-      id,
-    ]);
+    return this.database.query(
+      `SELECT subject.id, subject.title, subject.text, subject.status_resolve, subject.created_at, JSON_ARRAYAGG(tag.name) as tags, concat(user.first_name, " ", user.last_name ) as fullname
+    FROM devs_corner.subject
+    INNER JOIN devs_corner.subject_has_tag ON subject.id = subject_has_tag.subject_id
+    INNER JOIN devs_corner.tag ON subject_has_tag.tag_id = tag.id
+    INNER JOIN devs_corner.user ON devs_corner.subject.user_id = devs_corner.user.id where subject.id = ?`,
+      [id]
+    );
   }
 }
 
