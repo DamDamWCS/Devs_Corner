@@ -24,8 +24,7 @@ class SubjectManager extends AbstractManager {
         INNER JOIN devs_corner.tag ON subject_has_tag.tag_id = tag.id
         INNER JOIN devs_corner.user ON devs_corner.subject.user_id = devs_corner.user.id
         WHERE subject_has_tag.tag_id IN (?)
-        GROUP BY subject.id
-        HAVING COUNT(DISTINCT subject_has_tag.tag_id) = 1`,
+        GROUP BY subject.id`,
       tagId
     );
   }
@@ -42,6 +41,12 @@ class SubjectManager extends AbstractManager {
         GROUP BY subject.id`,
       tagId
     );
+  }
+
+  getId(id) {
+    return this.database.query(`select * from  ${this.table} where id = ?`, [
+      id,
+    ]);
   }
 }
 

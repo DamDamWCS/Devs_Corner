@@ -14,5 +14,6 @@ router.delete("/items/:id", itemControllers.destroy);
 // route subjects :
 
 router.get("/api/subjects", subjectControllers.browse);
+router.get("/api/subjects/:id", subjectControllers.read);
 
 module.exports = router;

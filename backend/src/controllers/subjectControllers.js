@@ -36,7 +36,7 @@ const browse = (req, res) => {
 
 const read = (req, res) => {
   models.subject
-    .find(req.params.id)
+    .getId(req.params.id)
     .then(([rows]) => {
       if (rows[0] == null) {
         res.sendStatus(404);
