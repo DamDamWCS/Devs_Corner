@@ -15,6 +15,10 @@ router.delete("/items/:id", itemControllers.destroy);
 
 router.get("/api/subjects", subjectControllers.browse);
 router.get("/api/subjects/:id", subjectControllers.read);
-router.post("/api/subjects", subjectControllers.add);
+router.post(
+  "/api/subjects",
+  subjectControllers.validateSubject,
+  subjectControllers.add
+);
 
 module.exports = router;
