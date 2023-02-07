@@ -73,14 +73,13 @@ const edit = (req, res) => {
 };
 
 const add = (req, res) => {
-  const subject = req.body;
-
-  // TODO validations (length, format...)
-
   models.subject
-    .insert(subject)
+    .insertSubject(req.body)
     .then(([result]) => {
-      res.location(`/items/${result.insertId}`).sendStatus(201);
+      models.subject.insertTag(result.insertId, req.body.tags).then(() => {
+        // res.location(`/items/${result.insertId}`).sendStatus(201);
+        res.sendStatus(201);
+      });
     })
     .catch((err) => {
       console.error(err);

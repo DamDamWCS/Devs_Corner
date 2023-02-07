@@ -53,6 +53,22 @@ class SubjectManager extends AbstractManager {
       [id]
     );
   }
+
+  insertSubject(subject) {
+    const { title, text, userId } = subject;
+
+    return this.database.query(
+      `insert into subject (title, text, status_resolve, user_id) values (?, ?, 0, ?);`,
+      [title, text, userId]
+    );
+  }
+
+  insertTag(subjectId, tagsId) {
+    return this.database.query(
+      `insert into subject_has_tag (subject_id, tag_id) values (?, ?);`,
+      [subjectId, tagsId]
+    );
+  }
 }
 
 module.exports = SubjectManager;
