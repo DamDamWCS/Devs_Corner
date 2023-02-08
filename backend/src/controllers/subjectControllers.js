@@ -94,13 +94,16 @@ const read = (req, res) => {
 };
 
 const edit = (req, res) => {
-  const subject = req.body;
-  subject.id = parseInt(req.params.id, 10);
+  const subjectId = parseInt(req.params.id, 10);
   if ("status_resolve" in req.body) {
     models.subject
-      .updateStatus(subject.id, req.body.status_resolve)
-      .then(() => {
-        res.sendStatus(204);
+      .updateStatus(subjectId, req.body.status_resolve)
+      .then((result) => {
+        if (result.affectedRows === 0) {
+          res.sendStatus(404);
+        } else {
+          res.sendStatus(204);
+        }
       })
       .catch((err) => {
         console.error(err);
@@ -108,14 +111,14 @@ const edit = (req, res) => {
       });
   } else {
     models.subject
-      .updateSubject(subject)
+      .updateSubject(req.body, subjectId)
       .then(([result]) => {
         if (result.affectedRows === 0) {
           res.sendStatus(404);
         } else {
-          models.subject.deleteTags(subject.id).then(() => {
+          models.subject.deleteTags(subjectId).then(() => {
             req.body.tags.map((tagId) =>
-              models.subject.insertTag(subject.id, tagId).catch((err) => {
+              models.subject.insertTag(subjectId, tagId).catch((err) => {
                 console.error(err);
                 return res.sendStatus(500);
               })
@@ -132,9 +135,9 @@ const edit = (req, res) => {
 };
 
 const add = (req, res) => {
-  const idToken = 1
+  const idToken = 1;
   models.subject
-    .insertSubject(req.body,idToken)
+    .insertSubject(req.body, idToken)
     .then(([result]) => {
       req.body.tags.map((tagId) =>
         models.subject.insertTag(result.insertId, tagId).catch((err) => {
