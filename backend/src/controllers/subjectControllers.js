@@ -95,7 +95,7 @@ const edit = (req, res) => {
 
 const add = (req, res) => {
   models.subject
-    .insertSubject(req.body, req.payload.sub)
+    .insertSubject(req.body)
     .then(([result]) => {
       req.body.tags.map((tagId) =>
         models.subject.insertTag(result.insertId, tagId).catch((err) => {
