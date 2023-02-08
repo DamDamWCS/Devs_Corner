@@ -1,4 +1,25 @@
+const Joi = require("../../node_modules/joi");
 const models = require("../models");
+
+const subjectSchema = Joi.object({
+  title: Joi.string().required(),
+  text: Joi.string().required(),
+  userId: Joi.number().integer().required(),
+  tags: Joi.array().min(1).items(Joi.number().integer()).required(),
+});
+
+const validateSubject = (req, res, next) => {
+  const { title, text, userId, tags } = req.body;
+  const { error } = subjectSchema.validate(
+    { title, text, userId, tags },
+    { abortEarly: false }
+  );
+  if (error) {
+    res.status(422).json({ validationErrors: error.details });
+  } else {
+    next();
+  }
+};
 
 const browse = (req, res) => {
   if (!req.query.tag) {
@@ -73,14 +94,16 @@ const edit = (req, res) => {
 };
 
 const add = (req, res) => {
-  const subject = req.body;
-
-  // TODO validations (length, format...)
-
   models.subject
-    .insert(subject)
+    .insertSubject(req.body, req.payload.sub)
     .then(([result]) => {
-      res.location(`/items/${result.insertId}`).sendStatus(201);
+      req.body.tags.map((tagId) =>
+        models.subject.insertTag(result.insertId, tagId).catch((err) => {
+          console.error(err);
+          return res.sendStatus(500);
+        })
+      );
+      return res.sendStatus(201);
     })
     .catch((err) => {
       console.error(err);
@@ -105,6 +128,7 @@ const destroy = (req, res) => {
 };
 
 module.exports = {
+  validateSubject,
   browse,
   read,
   edit,
