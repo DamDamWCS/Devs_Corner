@@ -79,11 +79,16 @@ const edit = (req, res) => {
   subject.id = parseInt(req.params.id, 10);
 
   models.subject
-    .update(subject)
+    .updateSubject(subject)
     .then(([result]) => {
       if (result.affectedRows === 0) {
         res.sendStatus(404);
       } else {
+        models.subject.deleteTags(result.insertId);
+        // models.subject.insertTag(result.insertId, tagId).catch((err) => {
+        //   console.error(err);
+        //   return res.sendStatus(500);
+        // });
         res.sendStatus(204);
       }
     })
@@ -95,7 +100,7 @@ const edit = (req, res) => {
 
 const add = (req, res) => {
   models.subject
-    .insertSubject(req.body, req.payload.sub)
+    .insertSubject(req.body)
     .then(([result]) => {
       req.body.tags.map((tagId) =>
         models.subject.insertTag(result.insertId, tagId).catch((err) => {
