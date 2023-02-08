@@ -5,35 +5,41 @@ const subjectSchema = Joi.object({
   title: Joi.string().required(),
   text: Joi.string().required(),
   tags: Joi.array().min(1).items(Joi.number().integer()).required(),
-});
+}).unknown(false);
 
 const subjectStatusSchema = Joi.object({
-  statusResolve: Joi.number().integer().required().valid(0, 1),
-});
+  status_resolve: Joi.number().integer().required().valid(0, 1),
+}).unknown(false);
 
 const validateSubject = (req, res, next) => {
-  if (!req.body.status_resolve) {
-    const { title, text, tags } = req.body;
-    const { error } = subjectSchema.validate(
-      { title, text, tags },
-      { abortEarly: false }
-    );
+  if (
+    "title" in req.body &&
+    "text" in req.body &&
+    "tags" in req.body &&
+    Object.keys(req.body).length === 3
+  ) {
+    const { error } = subjectSchema.validate(req.body, {
+      abortEarly: false,
+    });
+    if (error) {
+      res.status(422).json({ validationErrors: error.details });
+    } else {
+      next();
+    }
+  } else if (
+    "status_resolve" in req.body &&
+    Object.keys(req.body).length === 1
+  ) {
+    const { error } = subjectStatusSchema.validate(req.body, {
+      abortEarly: false,
+    });
     if (error) {
       res.status(422).json({ validationErrors: error.details });
     } else {
       next();
     }
   } else {
-    const statusResolve = req.body.status_resolve;
-    const { error } = subjectStatusSchema.validate(
-      { statusResolve },
-      { abortEarly: false }
-    );
-    if (error) {
-      res.status(422).json({ validationErrors: error.details });
-    } else {
-      next();
-    }
+    res.status(500).send("Champs incorect !");
   }
 };
 
@@ -90,11 +96,15 @@ const read = (req, res) => {
 const edit = (req, res) => {
   const subject = req.body;
   subject.id = parseInt(req.params.id, 10);
-  if (req.body.status_resolve) {
+  if ("status_resolve" in req.body) {
     models.subject
       .updateStatus(subject.id, req.body.status_resolve)
       .then(() => {
         res.sendStatus(204);
+      })
+      .catch((err) => {
+        console.error(err);
+        res.sendStatus(500);
       });
   } else {
     models.subject
@@ -110,8 +120,8 @@ const edit = (req, res) => {
                 return res.sendStatus(500);
               })
             );
+            res.sendStatus(204);
           });
-          res.sendStatus(204);
         }
       })
       .catch((err) => {
@@ -122,8 +132,9 @@ const edit = (req, res) => {
 };
 
 const add = (req, res) => {
+  const idToken = 1
   models.subject
-    .insertSubject(req.body)
+    .insertSubject(req.body,idToken)
     .then(([result]) => {
       req.body.tags.map((tagId) =>
         models.subject.insertTag(result.insertId, tagId).catch((err) => {

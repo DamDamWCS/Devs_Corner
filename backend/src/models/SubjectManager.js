@@ -54,12 +54,12 @@ class SubjectManager extends AbstractManager {
     );
   }
 
-  insertSubject(subject) {
-    const { title, text, userId } = subject;
+  insertSubject(subject, idToken) {
+    const { title, text } = subject;
 
     return this.database.query(
       `insert into subject (title, text, status_resolve, user_id) values (?, ?, 0, ?);`,
-      [title, text, userId]
+      [title, text, idToken]
     );
   }
 
