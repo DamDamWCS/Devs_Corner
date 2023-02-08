@@ -73,7 +73,7 @@ class SubjectManager extends AbstractManager {
   updateSubject(subject) {
     return this.database.query(
       `update subject set title = ?, text = ? where id = ?`,
-      [subject.title, subject.id]
+      [subject.title, subject.text, subject.id]
     );
   }
 

@@ -21,7 +21,7 @@ router.post(
   subjectControllers.add
 );
 router.put(
-  "/api/subjects",
+  "/api/subjects/:id",
   subjectControllers.validateSubject,
   subjectControllers.edit
 );
