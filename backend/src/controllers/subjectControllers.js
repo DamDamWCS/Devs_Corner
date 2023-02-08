@@ -98,7 +98,7 @@ const edit = (req, res) => {
   if ("status_resolve" in req.body) {
     models.subject
       .updateStatus(subjectId, req.body.status_resolve)
-      .then((result) => {
+      .then(([result]) => {
         if (result.affectedRows === 0) {
           res.sendStatus(404);
         } else {
