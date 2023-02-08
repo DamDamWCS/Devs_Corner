@@ -77,6 +77,13 @@ class SubjectManager extends AbstractManager {
     );
   }
 
+  updateStatus(subjectId, status) {
+    return this.database.query(
+      `update subject set status_resolve = ? where id = ?`,
+      [status, subjectId]
+    );
+  }
+
   deleteTags(subjectId) {
     return this.database.query(
       `delete from subject_has_tag where subject_id = ?`,

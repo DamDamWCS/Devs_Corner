@@ -7,16 +7,33 @@ const subjectSchema = Joi.object({
   tags: Joi.array().min(1).items(Joi.number().integer()).required(),
 });
 
+const subjectStatusSchema = Joi.object({
+  statusResolve: Joi.number().integer().required().valid(0, 1),
+});
+
 const validateSubject = (req, res, next) => {
-  const { title, text, tags } = req.body;
-  const { error } = subjectSchema.validate(
-    { title, text, tags },
-    { abortEarly: false }
-  );
-  if (error) {
-    res.status(422).json({ validationErrors: error.details });
+  if (!req.body.status_resolve) {
+    const { title, text, tags } = req.body;
+    const { error } = subjectSchema.validate(
+      { title, text, tags },
+      { abortEarly: false }
+    );
+    if (error) {
+      res.status(422).json({ validationErrors: error.details });
+    } else {
+      next();
+    }
   } else {
-    next();
+    const statusResolve = req.body.status_resolve;
+    const { error } = subjectStatusSchema.validate(
+      { statusResolve },
+      { abortEarly: false }
+    );
+    if (error) {
+      res.status(422).json({ validationErrors: error.details });
+    } else {
+      next();
+    }
   }
 };
 
@@ -73,27 +90,35 @@ const read = (req, res) => {
 const edit = (req, res) => {
   const subject = req.body;
   subject.id = parseInt(req.params.id, 10);
-  models.subject
-    .updateSubject(subject)
-    .then(([result]) => {
-      if (result.affectedRows === 0) {
-        res.sendStatus(404);
-      } else {
-        models.subject.deleteTags(subject.id).then(() => {
-          req.body.tags.map((tagId) =>
-            models.subject.insertTag(subject.id, tagId).catch((err) => {
-              console.error(err);
-              return res.sendStatus(500);
-            })
-          );
-        });
+  if (req.body.status_resolve) {
+    models.subject
+      .updateStatus(subject.id, req.body.status_resolve)
+      .then(() => {
         res.sendStatus(204);
-      }
-    })
-    .catch((err) => {
-      console.error(err);
-      res.sendStatus(500);
-    });
+      });
+  } else {
+    models.subject
+      .updateSubject(subject)
+      .then(([result]) => {
+        if (result.affectedRows === 0) {
+          res.sendStatus(404);
+        } else {
+          models.subject.deleteTags(subject.id).then(() => {
+            req.body.tags.map((tagId) =>
+              models.subject.insertTag(subject.id, tagId).catch((err) => {
+                console.error(err);
+                return res.sendStatus(500);
+              })
+            );
+          });
+          res.sendStatus(204);
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+        res.sendStatus(500);
+      });
+  }
 };
 
 const add = (req, res) => {
