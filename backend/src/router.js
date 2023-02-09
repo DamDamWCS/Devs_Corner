@@ -14,7 +14,12 @@ router.delete("/items/:id", itemControllers.destroy);
 
 /* Public Route */
 // LOGIN
-router.post("/api/login", userControllers.login, auth.verifyPassword);
+router.post(
+  "/api/login",
+  userControllers.verifySyntax,
+  userControllers.login,
+  auth.verifyPassword
+);
 // REGISTER
 router.post(
   "/api/users",
@@ -48,6 +53,7 @@ router.put(
 // MODIFY PASSWORD
 router.put(
   "/api/users/:id/modifyPassword",
+  userControllers.verifySyntax,
   auth.verifyToken,
   auth.controlPassword,
   auth.verifyPassword,
