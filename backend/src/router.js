@@ -25,5 +25,6 @@ router.put(
   subjectControllers.validateSubject,
   subjectControllers.edit
 );
+router.delete("/api/subjects/:id", subjectControllers.destroy);
 
 module.exports = router;
