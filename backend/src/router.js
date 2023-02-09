@@ -18,18 +18,30 @@ router.post("/api/login", userControllers.login, auth.verifyPassword);
 // REGISTER
 router.post(
   "/api/users",
-  userControllers.verifySyntaxRegister,
+  userControllers.verifySyntax,
   auth.hashPassword,
   userControllers.add
 );
 
 /* Private Route */
-// router.use(auth.verifyToken); // authentication wall : verifyToken is activated for each route after this line
+router.use(auth.verifyToken); // authentication wall : verifyToken is activated for each route after this line
+/* INSERT BELOW ROUTE WHO DON'T NEED AUthorization */
+/* 
 
+
+
+*
+
+
+
+
+*/
+/* ******* */
+router.use(auth.checkUser); // authorization wall : check User
 // MODIFY INFORMATIONS
 router.put(
   "/api/users/:id",
-  userControllers.verifySyntaxUpdate,
+  userControllers.verifySyntax,
   userControllers.edit
 );
 

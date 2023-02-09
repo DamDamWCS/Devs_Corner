@@ -20,7 +20,6 @@ const hashPassword = (req, res, next) => {
   argon2
     .hash(req.body.password, hashingOptions) // récupère la valeur de password
     .then((hashedPassword) => {
-      // do something with hashedPassword
       req.body.hashedPassword = hashedPassword; // ici on créer la clé hashedPassword et attribut la valeur
       delete req.body.password; // on supprime la valeur clé password
       next();
@@ -32,8 +31,6 @@ const hashPassword = (req, res, next) => {
 };
 
 const controlPassword = (req, res, next) => {
-  console.error("CONTROLE PASSWORD", req.body);
-  // const user = req.body;
   models.user
     .find(req.params.id)
     .then(([user]) => {
@@ -66,8 +63,9 @@ const changePassword = (req, res) => {
       res.sendStatus(500);
     });
 };
+
 const verifyPassword = (req, res, next) => {
-  console.error("BODY", req.body);
+  const errors = [];
   argon2
     .verify(req.user.hashedPassword, req.body.password)
     .then((isVerified) => {
@@ -75,7 +73,12 @@ const verifyPassword = (req, res, next) => {
         if (req.body.newPassword) {
           next();
         } else {
-          const payload = { sub: req.user.id };
+          // value to control for the payload
+          const payload = {
+            userId: req.user.id,
+            userRole: req.user.role,
+            userState: req.user.state,
+          };
           const token = jwt.sign(payload, process.env.JWT_SECRET, {
             expiresIn: "24h",
           });
@@ -83,7 +86,10 @@ const verifyPassword = (req, res, next) => {
           res.send({ token, user: req.user, message: "Credentials are valid" });
         }
       } else {
-        res.sendStatus(401);
+        errors.push({
+          message: "Mauvaise combinaison email / password",
+        });
+        res.status(401).json({ validationErrors: errors });
       }
     })
     .catch((err) => {
@@ -94,9 +100,8 @@ const verifyPassword = (req, res, next) => {
 
 const verifyToken = (req, res, next) => {
   try {
-    const { headers } = req;
-
-    console.error("REQUETE", headers.authorization.split(" ")[1]);
+    // const { headers } = req;
+    // console.error("REQUETE", headers.authorization.split(" ")[1]);
 
     const authorizationHeader = req.get("Authorization");
     if (authorizationHeader == null) {
@@ -117,10 +122,26 @@ const verifyToken = (req, res, next) => {
   }
 };
 
+const checkUser = (req, res, next) => {
+  const errors = [];
+  // si la route est /api/users/:id
+  if (
+    (parseInt(req.params.id, 10) === req.payload.userId ||
+      req.payload.userRole === "admin") &&
+    req.payload.userState
+  ) {
+    next();
+  } else {
+    errors.push("Vous n'avez pas le droit de modifier ces informations");
+    res.status(401).json({ validationErrors: errors });
+  }
+};
+
 module.exports = {
   hashPassword,
   verifyPassword,
   changePassword,
   verifyToken,
   controlPassword,
+  checkUser,
 };

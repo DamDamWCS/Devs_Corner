@@ -1,4 +1,20 @@
+const Joi = require("../../node_modules/joi");
 const models = require("../models");
+
+const userSchema = Joi.object({
+  email: Joi.string().email().max(255).required(),
+  firstname: Joi.string().max(255).required(),
+  lastname: Joi.string().max(255).required(),
+});
+
+const passwordSchema = Joi.object({
+  password: Joi.string().pattern(
+    /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[-+!*$@%_])([-+!*$@%_\w]{8,15})$/
+  ),
+});
+
+// const passwordRegex =
+//  /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[-+!*$@%_])([-+!*$@%_\w]{8,15})$/;
 
 const browse = (req, res) => {
   models.user
@@ -30,37 +46,22 @@ const read = (req, res) => {
 
 const edit = (req, res) => {
   const user = req.body;
-  user.id = parseInt(req.params.id, 10);
+  user.id = req.params.id;
 
-  if (req.body.state) {
-    models.user
-      .updateInformation(user)
-      .then(([result]) => {
-        if (result.affectedRows === 0) {
-          res.sendStatus(404);
-        } else {
-          res.sendStatus(204);
-        }
-      })
-      .catch((err) => {
-        console.error("MY ERROR", err);
-        res.sendStatus(500);
-      });
-  } else {
-    models.user
-      .updateInformation(user)
-      .then(([result]) => {
-        if (result.affectedRows === 0) {
-          res.sendStatus(404);
-        } else {
-          res.sendStatus(204);
-        }
-      })
-      .catch((err) => {
-        console.error("MY ERROR", err);
-        res.sendStatus(500);
-      });
-  }
+  models.user
+    .updateInformation(user)
+    .then(([result]) => {
+      if (result.affectedRows === 0) {
+        res.sendStatus(404);
+      } else {
+        console.error("EDIT - MISE A JOUR OK");
+        res.sendStatus(204);
+      }
+    })
+    .catch((err) => {
+      console.error("MY ERROR IN EDIT", err);
+      res.sendStatus(500);
+    });
 };
 
 const add = (req, res) => {
@@ -86,7 +87,6 @@ const add = (req, res) => {
 const login = (req, res, next) => {
   const { body } = req;
   const errors = [];
-  console.error(req);
 
   models.user
     .findByEmail(body.email)
@@ -129,66 +129,45 @@ const destroy = (req, res) => {
     });
 };
 
-const verifySyntaxRegister = (req, res, next) => {
+const verifySyntax = (req, res, next) => {
   const { firstname, lastname, email, password } = req.body;
   const errors = [];
-  const emailRegex = /[a-z0-9._]+@[a-z0-9-]+\.[a-z]{2,3}/;
-  const passwordRegex =
-    /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[-+!*$@%_])([-+!*$@%_\w]{8,15})$/;
 
-  if (firstname === null) {
-    errors.push({ field: "firstname", message: "This field is required" });
-  }
-  if (firstname && firstname.length >= 15) {
-    errors.push({
-      field: "firstname",
-      message: "La longueur doit etre inférieur a 15 caractères",
-    });
-  }
-  if (lastname == null) {
-    errors.push({ field: "lastname", message: "This field is required" });
-  }
-  if (lastname && lastname.length >= 15) {
-    errors.push({
-      field: "lastname",
-      message: "La longueur doit etre inférieur a 15 caractères",
-    });
-  }
+  if (Object.keys.length === 3) {
+    const { error } = userSchema.validate(
+      { firstname, lastname, email },
+      { abortEarly: false }
+    );
 
-  if (!emailRegex.test(email)) {
-    errors.push({ field: "email", message: "Invalid email" });
-  }
-  if (!passwordRegex.test(password)) {
-    errors.push({
-      field: "password",
-      message:
-        "Majuscule, minucule, caractère spécial, chiffre entre 8 et 15 caractères",
-    });
-  }
-  if (errors.length) {
-    res.status(422).json({ validationErrors: errors });
+    if (error) {
+      res.status(422).json({ validationErrors: error.details });
+    } else {
+      next();
+    }
+  } else if (Object.keys.length === 4) {
+    // faire un concat pour JOI
+    const { error } = userSchema.validate(
+      { firstname, lastname, email, password },
+      { abortEarly: false }
+    );
+    if (error) {
+      res.status(422).json({ validationErrors: error.details });
+    } else {
+      next();
+    }
+  } else if (Object.keys.length === 1) {
+    const { error } = passwordSchema.validate(
+      { password },
+      { abortEarly: true }
+    );
+    if (error) {
+      res.status(422).json({ validationErrors: error.details });
+    } else {
+      next();
+    }
   } else {
-    next();
-  }
-};
-
-const verifySyntaxUpdate = (req, res, next) => {
-  const { firstname, lastname, email } = req.body;
-  const errors = [];
-  const emailRegex = /[a-z0-9._]+@[a-z0-9-]+\.[a-z]{2,3}/;
-  if (firstname == null) {
-    errors.push({ field: "firstname", message: "This field is required" });
-  }
-  if (lastname == null) {
-    errors.push({ field: "lastname", message: "This field is required" });
-  }
-  if (!emailRegex.test(email)) {
-    errors.push({ field: "email", message: "Invalid email" });
-  }
-  if (errors.length) {
-    res.status(422).json({ validationErrors: errors });
-  } else {
-    next();
+    errors.push("erreur dans le passage des données");
+    res.status(401).send({ validationErrors: errors });
   }
 };
 
@@ -199,6 +178,5 @@ module.exports = {
   add,
   login,
   destroy,
-  verifySyntaxRegister,
-  verifySyntaxUpdate,
+  verifySyntax,
 };

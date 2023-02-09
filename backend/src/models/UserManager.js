@@ -20,9 +20,10 @@ class UserManager extends AbstractManager {
   }
 
   updateInformation(user) {
+    console.error(user);
     return this.database.query(
       `update ${this.table} set first_name =?, last_name=?, email = ? where id = ?`,
-      [user.first_name, user.last_name, user.email, user.id]
+      [user.firstname, user.lastname, user.email, user.id]
     );
   }
 
