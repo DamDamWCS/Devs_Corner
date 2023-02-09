@@ -153,7 +153,7 @@ const add = (req, res) => {
 };
 
 const destroy = (req, res) => {
-  models.subjects
+  models.subject
     .delete(req.params.id)
     .then(([result]) => {
       if (result.affectedRows === 0) {
