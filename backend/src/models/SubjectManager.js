@@ -7,7 +7,7 @@ class SubjectManager extends AbstractManager {
 
   getAll() {
     return this.database
-      .query(`SELECT subject.id, subject.text, subject.title, subject.status_resolve, subject.created_at, JSON_ARRAYAGG(tag.name) as tags, concat(user.first_name, " ", user.last_name ) as Auteur
+      .query(`SELECT subject.id, subject.title, subject.text, subject.status_resolve, subject.created_at, JSON_ARRAYAGG(tag.name) as tags, concat(user.first_name, " ", user.last_name ) as Auteur
       FROM devs_corner.subject
       INNER JOIN devs_corner.subject_has_tag ON subject.id = subject_has_tag.subject_id
       INNER JOIN devs_corner.tag ON subject_has_tag.tag_id = tag.id
@@ -18,7 +18,7 @@ class SubjectManager extends AbstractManager {
 
   getAllOneQuery(tagId) {
     return this.database.query(
-      `SELECT subject.id, subject.text, subject.title, subject.status_resolve, subject.created_at, JSON_ARRAYAGG(tag.name) as tags, concat(user.first_name, " ", user.last_name ) as Auteur
+      `SELECT subject.id, subject.title, subject.text, subject.status_resolve, subject.created_at, JSON_ARRAYAGG(tag.name) as tags, concat(user.first_name, " ", user.last_name ) as Auteur
         FROM devs_corner.subject
         INNER JOIN devs_corner.subject_has_tag ON subject.id = subject_has_tag.subject_id
         INNER JOIN devs_corner.tag ON subject_has_tag.tag_id = tag.id
@@ -32,7 +32,7 @@ class SubjectManager extends AbstractManager {
   getAllQuery(tagId) {
     const placeholders = tagId.map(() => `?`).join(",");
     return this.database.query(
-      `SELECT subject.id, subject.text, subject.title, subject.status_resolve, subject.created_at, JSON_ARRAYAGG(tag.name) as tags, concat(user.first_name, " ", user.last_name ) as Auteur
+      `SELECT subject.id, subject.title, subject.text, subject.status_resolve, subject.created_at, JSON_ARRAYAGG(tag.name) as tags, concat(user.first_name, " ", user.last_name ) as Auteur
         FROM devs_corner.subject
         INNER JOIN devs_corner.subject_has_tag ON subject.id = subject_has_tag.subject_id
         INNER JOIN devs_corner.tag ON subject_has_tag.tag_id = tag.id
@@ -54,12 +54,12 @@ class SubjectManager extends AbstractManager {
     );
   }
 
-  insertSubject(subject) {
-    const { title, text, userId } = subject;
+  insertSubject(subject, idToken) {
+    const { title, text } = subject;
 
     return this.database.query(
       `insert into subject (title, text, status_resolve, user_id) values (?, ?, 0, ?);`,
-      [title, text, userId]
+      [title, text, idToken]
     );
   }
 
@@ -67,6 +67,27 @@ class SubjectManager extends AbstractManager {
     return this.database.query(
       `insert into subject_has_tag (subject_id, tag_id) values (?, ?);`,
       [subjectId, tagsId]
+    );
+  }
+
+  updateSubject(subject, subjectId) {
+    return this.database.query(
+      `update subject set title = ?, text = ? where id = ?`,
+      [subject.title, subject.text, subjectId]
+    );
+  }
+
+  updateStatus(subjectId, status) {
+    return this.database.query(
+      `update subject set status_resolve = ? where id = ?`,
+      [status, subjectId]
+    );
+  }
+
+  deleteTags(subjectId) {
+    return this.database.query(
+      `delete from subject_has_tag where subject_id = ?`,
+      [subjectId]
     );
   }
 }

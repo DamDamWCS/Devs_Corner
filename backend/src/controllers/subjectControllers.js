@@ -4,20 +4,42 @@ const models = require("../models");
 const subjectSchema = Joi.object({
   title: Joi.string().required(),
   text: Joi.string().required(),
-  userId: Joi.number().integer().required(),
   tags: Joi.array().min(1).items(Joi.number().integer()).required(),
-});
+}).unknown(false);
+
+const subjectStatusSchema = Joi.object({
+  status_resolve: Joi.number().integer().required().valid(0, 1),
+}).unknown(false);
 
 const validateSubject = (req, res, next) => {
-  const { title, text, userId, tags } = req.body;
-  const { error } = subjectSchema.validate(
-    { title, text, userId, tags },
-    { abortEarly: false }
-  );
-  if (error) {
-    res.status(422).json({ validationErrors: error.details });
+  if (
+    "title" in req.body &&
+    "text" in req.body &&
+    "tags" in req.body &&
+    Object.keys(req.body).length === 3
+  ) {
+    const { error } = subjectSchema.validate(req.body, {
+      abortEarly: false,
+    });
+    if (error) {
+      res.status(422).json({ validationErrors: error.details });
+    } else {
+      next();
+    }
+  } else if (
+    "status_resolve" in req.body &&
+    Object.keys(req.body).length === 1
+  ) {
+    const { error } = subjectStatusSchema.validate(req.body, {
+      abortEarly: false,
+    });
+    if (error) {
+      res.status(422).json({ validationErrors: error.details });
+    } else {
+      next();
+    }
   } else {
-    next();
+    res.status(500).send("Champs incorect !");
   }
 };
 
@@ -72,30 +94,50 @@ const read = (req, res) => {
 };
 
 const edit = (req, res) => {
-  const subject = req.body;
-
-  // TODO validations (length, format...)
-
-  subject.id = parseInt(req.params.id, 10);
-
-  models.subject
-    .update(subject)
-    .then(([result]) => {
-      if (result.affectedRows === 0) {
-        res.sendStatus(404);
-      } else {
-        res.sendStatus(204);
-      }
-    })
-    .catch((err) => {
-      console.error(err);
-      res.sendStatus(500);
-    });
+  const subjectId = parseInt(req.params.id, 10);
+  if ("status_resolve" in req.body) {
+    models.subject
+      .updateStatus(subjectId, req.body.status_resolve)
+      .then(([result]) => {
+        if (result.affectedRows === 0) {
+          res.sendStatus(404);
+        } else {
+          res.sendStatus(204);
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+        res.sendStatus(500);
+      });
+  } else {
+    models.subject
+      .updateSubject(req.body, subjectId)
+      .then(([result]) => {
+        if (result.affectedRows === 0) {
+          res.sendStatus(404);
+        } else {
+          models.subject.deleteTags(subjectId).then(() => {
+            req.body.tags.map((tagId) =>
+              models.subject.insertTag(subjectId, tagId).catch((err) => {
+                console.error(err);
+                return res.sendStatus(500);
+              })
+            );
+            res.sendStatus(204);
+          });
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+        res.sendStatus(500);
+      });
+  }
 };
 
 const add = (req, res) => {
+  const idToken = 1;
   models.subject
-    .insertSubject(req.body)
+    .insertSubject(req.body, idToken)
     .then(([result]) => {
       req.body.tags.map((tagId) =>
         models.subject.insertTag(result.insertId, tagId).catch((err) => {

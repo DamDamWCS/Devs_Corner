@@ -20,5 +20,10 @@ router.post(
   subjectControllers.validateSubject,
   subjectControllers.add
 );
+router.put(
+  "/api/subjects/:id",
+  subjectControllers.validateSubject,
+  subjectControllers.edit
+);
 
 module.exports = router;
