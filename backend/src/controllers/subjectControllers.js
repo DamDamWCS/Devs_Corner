@@ -5,8 +5,7 @@ const subjectSchema = Joi.object({
   title: Joi.string().required(),
   text: Joi.string().required(),
   tags: Joi.array().min(1).items(Joi.number().integer()).required(),
-}).unknown(false);
-
+});
 const subjectStatusSchema = Joi.object({
   status_resolve: Joi.number().integer().required().valid(0, 1),
 }).unknown(false);
