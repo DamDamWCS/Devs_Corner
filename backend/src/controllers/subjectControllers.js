@@ -11,12 +11,7 @@ const subjectStatusSchema = Joi.object({
 }).unknown(false);
 
 const validateSubject = (req, res, next) => {
-  if (
-    "title" in req.body &&
-    "text" in req.body &&
-    "tags" in req.body &&
-    Object.keys(req.body).length === 3
-  ) {
+  if (Object.keys(req.body).length === 3) {
     const { error } = subjectSchema.validate(req.body, {
       abortEarly: false,
     });
@@ -25,10 +20,7 @@ const validateSubject = (req, res, next) => {
     } else {
       next();
     }
-  } else if (
-    "status_resolve" in req.body &&
-    Object.keys(req.body).length === 1
-  ) {
+  } else if (Object.keys(req.body).length === 1) {
     const { error } = subjectStatusSchema.validate(req.body, {
       abortEarly: false,
     });
@@ -38,7 +30,11 @@ const validateSubject = (req, res, next) => {
       next();
     }
   } else {
-    res.status(500).send("Champs incorect !");
+    res
+      .status(422)
+      .send(
+        "Structure des données incorect ! clés attendu : 'title', 'text', 'tags' ou 'status_resolve'"
+      );
   }
 };
 
