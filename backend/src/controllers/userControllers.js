@@ -89,6 +89,7 @@ const add = (req, res) => {
 };
 
 const login = (req, res, next) => {
+  console.error("REQUETE", req.body);
   const { body } = req;
   const errors = [];
 
@@ -134,6 +135,7 @@ const destroy = (req, res) => {
 
 const verifySyntax = (req, res, next) => {
   const { firstname, lastname, email, password, newPassword } = req.body;
+
   const errors = [];
   if (
     Object.keys(req.body).length === 2 &&
