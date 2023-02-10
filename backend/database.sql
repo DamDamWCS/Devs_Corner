@@ -134,8 +134,8 @@ CREATE TABLE IF NOT EXISTS `devs_corner`.`subject_has_tag` (
   CONSTRAINT `fk_subject_has_tag_subject`
     FOREIGN KEY (`subject_id`)
     REFERENCES `devs_corner`.`subject` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
+    ON DELETE CASCADE
+    ON UPDATE  NO ACTION,
   CONSTRAINT `fk_subject_has_tag_tag`
     FOREIGN KEY (`tag_id`)
     REFERENCES `devs_corner`.`tag` (`id`)
