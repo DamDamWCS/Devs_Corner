@@ -42,7 +42,6 @@ models.user.setDatabase(pool);
 models.subject = new SubjectManager();
 models.subject.setDatabase(pool);
 
-
 // bonus: use a proxy to personalize error message,
 // when asking for a non existing model
 
