@@ -130,9 +130,8 @@ const edit = (req, res) => {
 };
 
 const add = (req, res) => {
-  const idToken = 1;
   models.subject
-    .insertSubject(req.body, idToken)
+    .insertSubject(req.body, req.payload.userId)
     .then(([result]) => {
       req.body.tags.map((tagId) =>
         models.subject.insertTag(result.insertId, tagId).catch((err) => {
