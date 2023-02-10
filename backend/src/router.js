@@ -13,7 +13,6 @@ router.put("/items/:id", itemControllers.edit);
 router.post("/items", itemControllers.add);
 router.delete("/items/:id", itemControllers.destroy);
 
-
 /* Public Route */
 // LOGIN
 router.post(
@@ -74,6 +73,5 @@ router.put(
   subjectControllers.edit
 );
 router.delete("/api/subjects/:id", subjectControllers.destroy);
-
 
 module.exports = router;
