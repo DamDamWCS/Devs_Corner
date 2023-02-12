@@ -88,6 +88,18 @@ const read = (req, res) => {
     });
 };
 
+// const readId = (subjectId) => {
+//   models.subject
+//     .getId(subjectId)
+//     .then(([rows]) => {
+//       // console.log(` readID : ${rows[0].user_id}`)
+//       return rows[0].user_id;
+//     })
+//     .catch((err) => {
+//       return err;
+//     });
+// };
+
 const edit = (req, res) => {
   const subjectId = parseInt(req.params.id, 10);
   if ("status_resolve" in req.body) {
@@ -165,6 +177,7 @@ const destroy = (req, res) => {
 
 module.exports = {
   validateSubject,
+  // readId,
   browse,
   read,
   edit,

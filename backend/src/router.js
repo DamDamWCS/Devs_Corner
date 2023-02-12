@@ -43,11 +43,10 @@ router.post(
   subjectControllers.add
 );
 
-/* ******* */
-router.use(auth.checkUser); // authorization wall : check User
 // MODIFY INFORMATIONS
 router.put(
   "/api/users/:id",
+  auth.checkUser,
   userControllers.verifySyntax,
   userControllers.edit
 );
@@ -55,6 +54,7 @@ router.put(
 // MODIFY PASSWORD
 router.put(
   "/api/users/:id/modifyPassword",
+  auth.checkUser,
   userControllers.verifySyntax,
   auth.verifyToken,
   auth.controlPassword,
@@ -63,15 +63,16 @@ router.put(
   auth.changePassword
 );
 
-router.get("/api/users", userControllers.browse);
-router.get("/api/users/:id", userControllers.read); // NON UTILE
-router.delete("/api/users/:id", userControllers.destroy);
+router.get("/api/users", auth.checkUser, userControllers.browse);
+router.get("/api/users/:id", auth.checkUser, userControllers.read); // NON UTILE
+router.delete("/api/users/:id", auth.checkUser, userControllers.destroy);
 
 router.put(
   "/api/subjects/:id",
+  auth.checkUser,
   subjectControllers.validateSubject,
   subjectControllers.edit
 );
-router.delete("/api/subjects/:id", subjectControllers.destroy);
+router.delete("/api/subjects/:id", auth.checkUser, subjectControllers.destroy);
 
 module.exports = router;
