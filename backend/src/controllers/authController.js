@@ -1,6 +1,6 @@
 const argon2 = require("argon2");
-const models = require("./models");
-const jwt = require("../node_modules/jsonwebtoken");
+const models = require("../models");
+const jwt = require("../../node_modules/jsonwebtoken");
 // const subjectControllers = require("./controllers/subjectControllers");
 
 const hashingOptions = {
@@ -119,62 +119,49 @@ const verifyToken = (req, res, next) => {
     next();
   } catch (err) {
     console.error(err);
-    res.sendStatus(401);
+    res.status(401).json("Problème token");
   }
 };
 
 const checkUser = (req, res, next) => {
-  switch (true) {
-    case (req.method === "PUT" || req.method === "DELETE") &&
-      req.path.startsWith("/api/subjects"):
-      models.subject
-        .getId(req.params.id)
-        .then(([subject]) => {
-          if (subject[0].id == null) {
-            res.sendStatus(404);
-          } else if (
-            (subject[0].user_id === req.payload.userId ||
-              req.payload.userRole === "admin") &&
-            req.payload.userState
-          ) {
-            next();
-          } else {
-            res
-              .status(401)
-              .json("Vous n'avez pas le droit de modifier ces informations");
-          }
-        })
-        .catch((err) => {
-          console.error(err);
-          res.sendStatus(500);
-        });
-      break;
-    case (req.method === "PUT" || req.method === "DELETE") &&
-      req.path === "/api/users":
-      if (
-        (parseInt(req.params.id, 10) === req.payload.userId ||
-          req.payload.userRole === "admin") &&
-        req.payload.userState
-      ) {
-        next();
-      }
-      break;
-    default:
-      // code à exécuter si aucune des routes précédentes ne correspond
-      break;
+  if (req.path.startsWith("/api/subjects")) {
+    models.subject
+      .getId(req.params.id)
+      .then(([subject]) => {
+        if (subject[0].id == null) {
+          res.sendStatus(404);
+        } else if (
+          (subject[0].user_id === req.payload.userId ||
+            req.payload.userRole === "admin") &&
+          req.payload.userState
+        ) {
+          next();
+        } else {
+          res
+            .status(401)
+            .json("Vous n'avez pas le droit de modifier ces informations");
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+        res.sendStatus(500);
+      });
+  } else if (
+    req.path === "/api/users" &&
+    (parseInt(req.params.id, 10) === req.payload.userId ||
+      req.payload.userRole === "admin") &&
+    req.payload.userState
+  ) {
+    next();
+  } else if (req.path.startsWith("/api/anwsers")) {
+    // check anwsers
+  } else if (req.path.startsWith("/api/comments")) {
+    // check comments
+  } else {
+    res
+      .status(401)
+      .json("Vous n'avez pas le droit de modifier ces informations");
   }
-  // const errors = [];
-  // // si la route est /api/users/:id
-  // if (
-  //   (parseInt(req.params.id, 10) === req.payload.userId ||
-  //     req.payload.userRole === "admin") &&
-  //   req.payload.userState
-  // ) {
-  //   next();
-  // } else {
-  //   errors.push("Vous n'avez pas le droit de modifier ces informations");
-  //   res.status(401).json({ validationErrors: errors });
-  // }
 };
 
 module.exports = {
