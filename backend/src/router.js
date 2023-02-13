@@ -4,7 +4,7 @@ const router = express.Router();
 
 const itemControllers = require("./controllers/itemControllers");
 const userControllers = require("./controllers/userControllers");
-const auth = require("./auth"); // don't forget to import
+const auth = require("./controllers/authControllers"); // don't forget to import
 const subjectControllers = require("./controllers/subjectControllers");
 
 router.get("/items", itemControllers.browse);
