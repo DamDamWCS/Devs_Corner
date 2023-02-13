@@ -124,18 +124,6 @@ const verifyToken = (req, res, next) => {
 };
 
 const checkUser = (req, res, next) => {
-  // const errors = [];
-  // // si la route est /api/users/:id
-  // if (
-  //   (parseInt(req.params.id, 10) === req.payload.userId ||
-  //     req.payload.userRole === "admin") &&
-  //   req.payload.userState
-  // ) {
-  //   next();
-  // } else {
-  //   errors.push("Vous n'avez pas le droit de modifier ces informations");
-  //   res.status(401).json({ validationErrors: errors });
-  // }
   switch (true) {
     case (req.method === "PUT" || req.method === "DELETE") &&
       req.path.startsWith("/api/subjects"):
@@ -163,7 +151,6 @@ const checkUser = (req, res, next) => {
       break;
     case (req.method === "PUT" || req.method === "DELETE") &&
       req.path === "/api/users":
-      // code à exécuter si la méthode est DELETE et la route est "/api/users"
       if (
         (parseInt(req.params.id, 10) === req.payload.userId ||
           req.payload.userRole === "admin") &&
@@ -176,6 +163,18 @@ const checkUser = (req, res, next) => {
       // code à exécuter si aucune des routes précédentes ne correspond
       break;
   }
+  // const errors = [];
+  // // si la route est /api/users/:id
+  // if (
+  //   (parseInt(req.params.id, 10) === req.payload.userId ||
+  //     req.payload.userRole === "admin") &&
+  //   req.payload.userState
+  // ) {
+  //   next();
+  // } else {
+  //   errors.push("Vous n'avez pas le droit de modifier ces informations");
+  //   res.status(401).json({ validationErrors: errors });
+  // }
 };
 
 module.exports = {
