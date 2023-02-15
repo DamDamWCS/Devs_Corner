@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import React, { useContext } from "react";
 import TokenContext from "../../services/contexts/TokenContext";
+import Footer from "../../components/footer/Footer";
 
 export default function Landing() {
   const { setIsLoggedIn } = useContext(TokenContext);
@@ -22,6 +23,7 @@ export default function Landing() {
       <button type="button" onClick={handleclick}>
         TOKEN
       </button>
+      <Footer />
     </div>
   );
 }

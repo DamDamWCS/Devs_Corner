@@ -131,6 +131,8 @@ const checkUser = (req, res, next) => {
       req.payload.userState
     ) {
       next();
+    } else {
+      res.status(401).json("Vous n'avez pas les droits");
     }
   }
   if (req.path.startsWith("/api/subjects")) {

@@ -8,6 +8,7 @@ import {
 import SubjectList from "../../pages/subjectsList/SubjectsList";
 import Subject from "../../pages/subject/Subject";
 import Account from "../../pages/account/Account";
+import Footer from "../../components/footer/Footer";
 
 function PrivateRoute() {
   return (
@@ -20,6 +21,7 @@ function PrivateRoute() {
           <Route path="*" element={<Navigate replace to="/" />} />
         </>
       </Routes>
+      <Footer />
     </Router>
   );
 }
