@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import React, { useContext } from "react";
 import TokenContext from "../../services/contexts/TokenContext";
 import Footer from "../../components/footer/Footer";
+import "./Landing.css";
 
 export default function Landing() {
   const { setIsLoggedIn } = useContext(TokenContext);
@@ -16,14 +17,16 @@ export default function Landing() {
     navigate("/");
   };
   return (
-    <div>
-      <h1>PAGE LANDING</h1>
-      <p>Test ICON :</p>
-      <i className="icons-checked icons-size-30px" aria-hidden="true" />
-      <button type="button" onClick={handleclick}>
-        TOKEN
-      </button>
+    <>
+      <div className="">
+        <h1>PAGE LANDING</h1>
+        <p>Test ICON :</p>
+        <i className="icons-checked icons-size-30px" aria-hidden="true" />
+        <button type="button" onClick={handleclick}>
+          TOKEN
+        </button>
+      </div>
       <Footer />
-    </div>
+    </>
   );
 }

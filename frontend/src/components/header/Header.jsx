@@ -1,5 +1,11 @@
+import "./Header.css";
+
 function Header() {
-  return <h1>LE HEADER</h1>;
+  return (
+    <div className="bg-gray header">
+      <h1 className="text-white">Le Header</h1>
+    </div>
+  );
 }
 
 export default Header;

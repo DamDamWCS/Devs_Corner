@@ -9,10 +9,12 @@ import SubjectList from "../../pages/subjectsList/SubjectsList";
 import Subject from "../../pages/subject/Subject";
 import Account from "../../pages/account/Account";
 import Footer from "../../components/footer/Footer";
+import NavBar from "../../components/navbar/Navbar";
 
 function PrivateRoute() {
   return (
     <Router>
+      <NavBar />
       <Routes>
         <>
           <Route path="/" element={<SubjectList />} />

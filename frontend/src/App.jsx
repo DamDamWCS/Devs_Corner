@@ -13,10 +13,12 @@ function App() {
   );
 
   return (
-    <TokenContext.Provider value={{ isLoggedIn, setIsLoggedIn }}>
-      <Header />
-      {isLoggedIn ? <PrivateRoute /> : <PublicRoutes />}
-    </TokenContext.Provider>
+    <div className="App">
+      <TokenContext.Provider value={{ isLoggedIn, setIsLoggedIn }}>
+        <Header />
+        {isLoggedIn ? <PrivateRoute /> : <PublicRoutes />}
+      </TokenContext.Provider>
+    </div>
   );
 }
 
