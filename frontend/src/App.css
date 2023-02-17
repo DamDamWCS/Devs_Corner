@@ -13,9 +13,14 @@ code {
 }
 
 .App {
-  text-align: center;
+  background-color: #e0ded8;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
-
+.b-shadow {
+  box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.2);
+}
 .App-logo {
   height: 40vmin;
   pointer-events: none;
