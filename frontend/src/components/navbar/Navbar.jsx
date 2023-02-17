@@ -1,7 +1,9 @@
+import "./NavBar.css";
+
 function NavBar() {
   return (
-    <div>
-      <h2>LA NAVBAR</h2>
+    <div className="navBar">
+      <h2 className="text-center">LA NAVBAR</h2>
     </div>
   );
 }
