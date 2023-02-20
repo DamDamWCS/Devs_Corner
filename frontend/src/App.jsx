@@ -1,5 +1,4 @@
 /* eslint-disable react/jsx-no-constructed-context-values */
-/* eslint-disable import/no-extraneous-dependencies */
 import "./App.css";
 import { useState } from "react";
 import PublicRoutes from "./services/routes/PublicRoutes";

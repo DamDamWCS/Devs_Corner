@@ -1,4 +1,5 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
+/* eslint-disable react/jsx-no-constructed-context-values */
+/* eslint-disable import/no-extraneous-dependencies */
 import "@sncf/bootstrap-sncf.metier/dist/bootstrap-sncf.css";
 
 import React from "react";
