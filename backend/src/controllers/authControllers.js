@@ -123,7 +123,7 @@ const verifyToken = (req, res, next) => {
   }
 };
 
-const checkToken = (req, res) => {
+const checkToken = (res) => {
   res.status(200).json("Token Valide !");
 };
 
