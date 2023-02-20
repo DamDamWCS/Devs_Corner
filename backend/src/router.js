@@ -33,6 +33,10 @@ router.post(
 router.use(auth.verifyToken); // authentication wall : verifyToken is activated for each route after this line
 /* INSERT BELOW ROUTE WHO DON'T NEED AUthorization */
 
+// CheckToken :
+
+router.get("/api/checkToken", auth.checkToken);
+
 // route subjects :
 
 router.get("/api/subjects", subjectControllers.browse);
