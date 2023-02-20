@@ -123,6 +123,10 @@ const verifyToken = (req, res, next) => {
   }
 };
 
+const checkToken = (res) => {
+  res.status(200).json("Token Valide !");
+};
+
 const checkUser = (req, res, next) => {
   if (req.path.startsWith("/api/users")) {
     if (
@@ -208,6 +212,7 @@ const checkUser = (req, res, next) => {
 
 module.exports = {
   hashPassword,
+  checkToken,
   verifyPassword,
   changePassword,
   verifyToken,
